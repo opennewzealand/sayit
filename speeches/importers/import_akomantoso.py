@@ -28,6 +28,12 @@ def title_case_heading(heading):
 
 class ImportAkomaNtoso (ImporterBase):
 
+    merge_empty_sections = True
+
+    def __init__(self, **kwargs):
+        self.merge_empty_sections = kwargs.get('merge_empty_sections', True)
+        return super(ImportAkomaNtoso, self).__init__()
+
     def import_document(self, document_path):
         #try:
         tree = objectify.parse(document_path)
@@ -81,6 +87,7 @@ class ImportAkomaNtoso (ImporterBase):
             return name.title()
 
     def visit(self, node, section):
+       cached_title = ''
        for child in node.iterchildren():
             tagname = self.get_tag(child)
             if tagname == 'heading':
@@ -88,8 +95,17 @@ class ImportAkomaNtoso (ImporterBase):
                 continue
             if tagname == 'debateSection':
                 title = title_case_heading(child.heading.text)
-                childSection = self.make(Section, parent=section, title=title)
-                self.visit(child, childSection)
+
+                if len(child) or not self.merge_empty_sections:
+                    if cached_title:
+                        title = cached_title + title
+                        cached_title = ''
+                    childSection = self.make(Section, parent=section, title=title)
+                    self.visit(child, childSection)
+                else:
+                    cached_title += title + ' - '
+                    self.visit(child, section)
+                    
             elif tagname == 'speech':
                 text = self.get_text(child)
                 name = child['from'].text
