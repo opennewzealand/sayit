@@ -31,8 +31,9 @@ class ImportAkomaNtoso (ImporterBase):
     merge_empty_sections = True
 
     def __init__(self, **kwargs):
-        self.merge_empty_sections = kwargs.get('merge_empty_sections', True)
-        return super(ImportAkomaNtoso, self).__init__()
+        if 'merge_empty_sections' in kwargs:
+            self.merge_empty_sections = kwargs.pop('merge_empty_sections')
+        return super(ImportAkomaNtoso, self).__init__(**kwargs)
 
     def import_document(self, document_path):
         #try:
@@ -105,7 +106,7 @@ class ImportAkomaNtoso (ImporterBase):
                 else:
                     cached_title += title + ' - '
                     self.visit(child, section)
-                    
+
             elif tagname == 'speech':
                 text = self.get_text(child)
                 name = child['from'].text
