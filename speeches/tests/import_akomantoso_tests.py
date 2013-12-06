@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 
 from django.core.management import call_command
 
@@ -9,7 +10,7 @@ from popit.models import ApiInstance
 from popit_resolver.resolve import SetupEntities, EntityName
 
 import speeches
-from speeches.models import Speaker
+from speeches.models import Speaker, Section
 from speeches.importers.import_akomantoso import ImportAkomaNtoso, title_case_heading
 
 import logging
@@ -22,6 +23,7 @@ class ImportAkomaNtosoTests(InstanceTestCase):
     @classmethod
     def setUpClass(cls):
         cls._in_fixtures = os.path.join(os.path.abspath(speeches.__path__[0]), 'fixtures', 'test_inputs')
+        cls._exepected_fixtures = os.path.join(os.path.abspath(speeches.__path__[0]), 'fixtures', 'expected_outputs')
 
         call_command('clear_index', interactive=False, verbosity=0)
 
@@ -59,6 +61,15 @@ class ImportAkomaNtosoTests(InstanceTestCase):
                 "%d above threshold %d/%d"
                 % (len(resolved), THRESHOLD, len(speakers)))
 
+
+        with open(os.path.join(self._exepected_fixtures, 'NA200912_section_titles.json')) as fh:
+            expected_titles = json.load(fh)
+
+        section_titles = [s.title for s in Section.objects.all()]
+
+        self.assertEqual(
+            expected_titles, section_titles
+        )
 
     def test_title_casing(self):
         tests = (
