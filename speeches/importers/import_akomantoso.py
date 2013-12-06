@@ -97,7 +97,13 @@ class ImportAkomaNtoso (ImporterBase):
             if tagname == 'debateSection':
                 title = title_case_heading(child.heading.text)
 
-                if len(child) or not self.merge_empty_sections:
+                print '---------------------------'
+                print title
+                print child
+                print len(list(child))
+                # print list(child)
+
+                if len(list(child)) > 1 or not self.merge_empty_sections:
                     if cached_title:
                         title = cached_title + title
                         cached_title = ''
