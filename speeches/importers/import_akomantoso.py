@@ -88,8 +88,8 @@ class ImportAkomaNtoso (ImporterBase):
             return name.title()
 
     def visit(self, node, section):
-       cached_title = ''
-       for child in node.iterchildren():
+        cached_title = ''
+        for child in node.iterchildren():
             tagname = self.get_tag(child)
             if tagname == 'heading':
                 # this will already have been extracted
@@ -97,13 +97,19 @@ class ImportAkomaNtoso (ImporterBase):
             if tagname == 'debateSection':
                 title = title_case_heading(child.heading.text)
 
-                print '---------------------------'
-                print title
-                print child
-                print len(list(child))
-                # print list(child)
+                # There is something odd with child in that len(child)
+                # returns not the number of elements in the child but rather
+                # the total number of children that node.iterchildren iterates
+                # over in the for loop above.
+                #
+                # Deal with this by reparsing the node (create string, parse
+                # string) and then count the number of elements in it.
+                reparsed_child = etree.fromstring(etree.tostring(child))
+                element_count = len(reparsed_child)
+                # etree.dump(reparsed_child)
+                # print 'length: ', element_count #len(list(reparsed_child))
 
-                if len(list(child)) > 1 or not self.merge_empty_sections:
+                if element_count > 1 or not self.merge_empty_sections:
                     if cached_title:
                         title = cached_title + title
                         cached_title = ''

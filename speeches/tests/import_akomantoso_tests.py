@@ -67,7 +67,7 @@ class ImportAkomaNtosoTests(InstanceTestCase):
 
         section_titles = [s.title for s in Section.objects.all()]
 
-        print json.dumps(section_titles, indent=4, sort_keys=True)
+        # print json.dumps(section_titles, indent=4, sort_keys=True)
 
         self.assertEqual(
             expected_titles, section_titles
