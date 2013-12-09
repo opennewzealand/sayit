@@ -97,17 +97,9 @@ class ImportAkomaNtoso (ImporterBase):
             if tagname == 'debateSection':
                 title = title_case_heading(child.heading.text)
 
-                # There is something odd with child in that len(child)
-                # returns not the number of elements in the child but rather
-                # the total number of children that node.iterchildren iterates
-                # over in the for loop above.
-                #
-                # Deal with this by reparsing the node (create string, parse
-                # string) and then count the number of elements in it.
-                reparsed_child = etree.fromstring(etree.tostring(child))
-                element_count = len(reparsed_child)
-                # etree.dump(reparsed_child)
-                # print 'length: ', element_count #len(list(reparsed_child))
+                # Note that len(child) returns the number of siblings, not the
+                # number of children (because we're using objectify).
+                element_count = child.countchildren()
 
                 if element_count > 1 or not self.merge_empty_sections:
                     if cached_title:
