@@ -46,3 +46,5 @@ CELERY_BROKER_URL: 'django://'
 SPEECH_SUMMARY_LENGTH: 30
 # Default auto-transcription text
 DEFAULT_TRANSCRIPTION: "This speech could not be transcribed automatically"
+
+POPIT_API_URL: ''
